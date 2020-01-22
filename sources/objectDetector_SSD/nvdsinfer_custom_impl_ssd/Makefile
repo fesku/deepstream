@@ -26,7 +26,7 @@ ifeq ($(CUDA_VER),)
 endif
 CC:= g++
 
-CFLAGS:= -Wall -Werror -std=c++11 -shared -fPIC
+CFLAGS:= -Wall -Werror -std=c++11 -shared -fPIC -Wno-error=deprecated-declarations
 CFLAGS+= -I../../includes -I/usr/local/cuda-$(CUDA_VER)/include
 
 LIBS:= -lnvinfer -lnvparsers -L/usr/local/cuda-$(CUDA_VER)/lib64 -lcudart -lcublas

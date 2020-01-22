@@ -21,7 +21,7 @@ LIB:=libnvdsgst_infer.so
 
 NVDS_VERSION:=4.0
 
-CFLAGS+= -fPIC -std=c++11 -DDS_VERSION=\"4.0.1\" \
+CFLAGS+= -fPIC -std=c++11 -DDS_VERSION=\"4.0.2\" \
 	 -I /usr/local/cuda-$(CUDA_VER)/include \
 	 -I ../../includes
 

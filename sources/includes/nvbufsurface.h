@@ -12,9 +12,9 @@
  * @file nvbufsurface.h
  * <b>NvBufSurface Interface </b>
  *
- * This file specifies the NvBufSurface management APIs.
+ * This file specifies the NvBufSurface management API.
  *
- * NvBufSurface APIs provides methods to allocate / deallocate, map / unmap
+ * The NvBufSurface API provides methods to allocate / deallocate, map / unmap
  * and copy batched buffers.
  */
 
@@ -36,410 +36,452 @@ extern "C"
 
 /** @{ */
 
-/** Default padding for reserved fields of structures. */
+/** Defines the default padding length for reserved fields of structures. */
 #define STRUCTURE_PADDING  4
 
-/** Maximum number of planes */
+/** Defines the maximum number of planes. */
 #define NVBUF_MAX_PLANES   4
 
 /**
- *  Defines mapping types of NvBufSurface.
+ * Specifies mapping types for \ref NvBufSurface.
  */
 typedef enum
 {
-  NVBUF_MAP_READ,
-  NVBUF_MAP_WRITE,
-  NVBUF_MAP_READ_WRITE,
+  NVBUF_MAP_READ,       /**< Specifies \ref NvBufSurface mapping type "read." */
+  NVBUF_MAP_WRITE,      /**< Specifies \ref NvBufSurface mapping type
+                            "write." */
+  NVBUF_MAP_READ_WRITE, /**< Specifies \ref NvBufSurface mapping type
+                            "read/write." */
 } NvBufSurfaceMemMapFlags;
 
 /**
- * Defines color formats for NvBufSurface.
+ * Specifies color formats for \ref NvBufSurface.
  */
 typedef enum
 {
-  /** Invalid color format. */
+  /** Specifies an invalid color format. */
   NVBUF_COLOR_FORMAT_INVALID,
-  /** 8 bit GRAY scale - single plane */
+  /** Specifies 8 bit GRAY scale - single plane */
   NVBUF_COLOR_FORMAT_GRAY8,
-  /** BT.601 colorspace - YUV420 multi-planar. */
+  /** Specifies BT.601 colorspace - YUV420 multi-planar. */
   NVBUF_COLOR_FORMAT_YUV420,
-  /** BT.601 colorspace - YUV420 multi-planar. */
+  /** Specifies BT.601 colorspace - YUV420 multi-planar. */
   NVBUF_COLOR_FORMAT_YVU420,
-  /** BT.601 colorspace - YUV420 ER multi-planar. */
+  /** Specifies BT.601 colorspace - YUV420 ER multi-planar. */
   NVBUF_COLOR_FORMAT_YUV420_ER,
-  /** BT.601 colorspace - YVU420 ER multi-planar. */
+  /** Specifies BT.601 colorspace - YVU420 ER multi-planar. */
   NVBUF_COLOR_FORMAT_YVU420_ER,
-  /** BT.601 colorspace - Y/CbCr 4:2:0 multi-planar. */
+  /** Specifies BT.601 colorspace - Y/CbCr 4:2:0 multi-planar. */
   NVBUF_COLOR_FORMAT_NV12,
-  /** BT.601 colorspace - Y/CbCr ER 4:2:0 multi-planar. */
+  /** Specifies BT.601 colorspace - Y/CbCr ER 4:2:0 multi-planar. */
   NVBUF_COLOR_FORMAT_NV12_ER,
-  /** BT.601 colorspace - Y/CbCr 4:2:0 multi-planar. */
+  /** Specifies BT.601 colorspace - Y/CbCr 4:2:0 multi-planar. */
   NVBUF_COLOR_FORMAT_NV21,
-  /** BT.601 colorspace - Y/CbCr ER 4:2:0 multi-planar. */
+  /** Specifies BT.601 colorspace - Y/CbCr ER 4:2:0 multi-planar. */
   NVBUF_COLOR_FORMAT_NV21_ER,
-  /** BT.601 colorspace - YUV 4:2:2 planar. */
+  /** Specifies BT.601 colorspace - YUV 4:2:2 planar. */
   NVBUF_COLOR_FORMAT_UYVY,
-  /** BT.601 colorspace - YUV ER 4:2:2 planar. */
+  /** Specifies BT.601 colorspace - YUV ER 4:2:2 planar. */
   NVBUF_COLOR_FORMAT_UYVY_ER,
-  /** BT.601 colorspace - YUV 4:2:2 planar. */
+  /** Specifies BT.601 colorspace - YUV 4:2:2 planar. */
   NVBUF_COLOR_FORMAT_VYUY,
-  /** BT.601 colorspace - YUV ER 4:2:2 planar. */
+  /** Specifies BT.601 colorspace - YUV ER 4:2:2 planar. */
   NVBUF_COLOR_FORMAT_VYUY_ER,
-  /** BT.601 colorspace - YUV 4:2:2 planar. */
+  /** Specifies BT.601 colorspace - YUV 4:2:2 planar. */
   NVBUF_COLOR_FORMAT_YUYV,
-  /** BT.601 colorspace - YUV ER 4:2:2 planar. */
+  /** Specifies BT.601 colorspace - YUV ER 4:2:2 planar. */
   NVBUF_COLOR_FORMAT_YUYV_ER,
-  /** BT.601 colorspace - YUV 4:2:2 planar. */
+  /** Specifies BT.601 colorspace - YUV 4:2:2 planar. */
   NVBUF_COLOR_FORMAT_YVYU,
-  /** BT.601 colorspace - YUV ER 4:2:2 planar. */
+  /** Specifies BT.601 colorspace - YUV ER 4:2:2 planar. */
   NVBUF_COLOR_FORMAT_YVYU_ER,
-  /** BT.601 colorspace - YUV444 multi-planar. */
+  /** Specifies BT.601 colorspace - YUV444 multi-planar. */
   NVBUF_COLOR_FORMAT_YUV444,
-  /** RGBA-8-8-8-8 single plane. */
+  /** Specifies RGBA-8-8-8-8 single plane. */
   NVBUF_COLOR_FORMAT_RGBA,
-  /** BGRA-8-8-8-8 single plane. */
+  /** Specifies BGRA-8-8-8-8 single plane. */
   NVBUF_COLOR_FORMAT_BGRA,
-  /** ARGB-8-8-8-8 single plane. */
+  /** Specifies ARGB-8-8-8-8 single plane. */
   NVBUF_COLOR_FORMAT_ARGB,
-  /** ABGR-8-8-8-8 single plane. */
+  /** Specifies ABGR-8-8-8-8 single plane. */
   NVBUF_COLOR_FORMAT_ABGR,
-  /** RGBx-8-8-8-8 single plane. */
+  /** Specifies RGBx-8-8-8-8 single plane. */
   NVBUF_COLOR_FORMAT_RGBx,
-  /** BGRx-8-8-8-8 single plane. */
+  /** Specifies BGRx-8-8-8-8 single plane. */
   NVBUF_COLOR_FORMAT_BGRx,
-  /** xRGB-8-8-8-8 single plane. */
+  /** Specifies xRGB-8-8-8-8 single plane. */
   NVBUF_COLOR_FORMAT_xRGB,
-  /** xBGR-8-8-8-8 single plane. */
+  /** Specifies xBGR-8-8-8-8 single plane. */
   NVBUF_COLOR_FORMAT_xBGR,
-  /** RGB-8-8-8 single plane. */
+  /** Specifies RGB-8-8-8 single plane. */
   NVBUF_COLOR_FORMAT_RGB,
-  /** BGR-8-8-8 single plane. */
+  /** Specifies BGR-8-8-8 single plane. */
   NVBUF_COLOR_FORMAT_BGR,
-  /** BT.601 colorspace - Y/CbCr 4:2:0 10-bit multi-planar. */
+  /** Specifies BT.601 colorspace - Y/CbCr 4:2:0 10-bit multi-planar. */
   NVBUF_COLOR_FORMAT_NV12_10LE,
-  /** BT.601 colorspace - Y/CbCr 4:2:0 12-bit multi-planar. */
+  /** Specifies BT.601 colorspace - Y/CbCr 4:2:0 12-bit multi-planar. */
   NVBUF_COLOR_FORMAT_NV12_12LE,
-  /** BT.709 colorspace - YUV420 multi-planar. */
+  /** Specifies BT.709 colorspace - YUV420 multi-planar. */
   NVBUF_COLOR_FORMAT_YUV420_709,
-  /** BT.709 colorspace - YUV420 ER multi-planar. */
+  /** Specifies BT.709 colorspace - YUV420 ER multi-planar. */
   NVBUF_COLOR_FORMAT_YUV420_709_ER,
-  /** BT.709 colorspace - Y/CbCr 4:2:0 multi-planar. */
+  /** Specifies BT.709 colorspace - Y/CbCr 4:2:0 multi-planar. */
   NVBUF_COLOR_FORMAT_NV12_709,
-  /** BT.709 colorspace - Y/CbCr ER 4:2:0 multi-planar. */
+  /** Specifies BT.709 colorspace - Y/CbCr ER 4:2:0 multi-planar. */
   NVBUF_COLOR_FORMAT_NV12_709_ER,
-  /** BT.2020 colorspace - YUV420 multi-planar. */
+  /** Specifies BT.2020 colorspace - YUV420 multi-planar. */
   NVBUF_COLOR_FORMAT_YUV420_2020,
-  /** BT.2020 colorspace - Y/CbCr 4:2:0 multi-planar. */
+  /** Specifies BT.2020 colorspace - Y/CbCr 4:2:0 multi-planar. */
   NVBUF_COLOR_FORMAT_NV12_2020,
 
   NVBUF_COLOR_FORMAT_LAST
 } NvBufSurfaceColorFormat;
 
 /**
- * Defines Layout formats for NvBufSurface video planes.
+ * Specifies layout formats for \ref NvBufSurface video planes.
  */
 typedef enum
 {
-  /** Pitch Layout. */
+  /** Specifies pitch layout. */
   NVBUF_LAYOUT_PITCH,
-  /** Block Linear Layout. */
+  /** Specifies block linear layout. */
   NVBUF_LAYOUT_BLOCK_LINEAR,
 } NvBufSurfaceLayout;
 
 /**
- * Defines memory types of NvBufSurface.
+ * Specifies memory types for \ref NvBufSurface.
  */
 typedef enum
 {
-  /** NVBUF_MEM_CUDA_DEVICE type for dGpu and NVBUF_MEM_SURFACE_ARRAY type for Jetson. */
+  /** Specifies the default memory type, i.e. \ref NVBUF_MEM_CUDA_DEVICE
+   for dGPU, \ref NVBUF_MEM_SURFACE_ARRAY for Jetson. Use \ref NVBUF_MEM_DEFAULT
+   to allocate whichever type of memory is appropriate for the platform. */
   NVBUF_MEM_DEFAULT,
-  /** CUDA Host memory type */
+  /** Specifies CUDA Host memory type. */
   NVBUF_MEM_CUDA_PINNED,
-  /** CUDA Device memory type */
+  /** Specifies CUDA Device memory type. */
   NVBUF_MEM_CUDA_DEVICE,
-  /** CUDA Unified memory type */
+  /** Specifies CUDA Unified memory type. */
   NVBUF_MEM_CUDA_UNIFIED,
-  /** NVRM Surface Array type - valid only for Jetson */
+  /** Specifies NVRM Surface Array type. Valid only for Jetson. */
   NVBUF_MEM_SURFACE_ARRAY,
-  /** NVRM Handle type - valid only for Jetson */
+  /** Specifies NVRM Handle type. Valid only for Jetson. */
   NVBUF_MEM_HANDLE,
-  /** malloced memory */
+  /** Specifies memory allocated by malloc(). */
   NVBUF_MEM_SYSTEM,
 } NvBufSurfaceMemType;
 
 /**
- * Holds plane wise parameters of a buffer.
+ * Holds the planewise parameters of a buffer.
  */
 typedef struct NvBufSurfacePlaneParams
 {
-  /** Number of planes */
+  /** Holds the number of planes. */
   uint32_t num_planes;
-  /** width of planes */
+  /** Holds the widths of planes. */
   uint32_t width[NVBUF_MAX_PLANES];
-  /** height of planes */
+  /** Holds the heights of planes. */
   uint32_t height[NVBUF_MAX_PLANES];
-  /** pitch of planes in bytes */
+  /** Holds the pitches of planes in bytes. */
   uint32_t pitch[NVBUF_MAX_PLANES];
-  /** offsets of planes in bytes */
+  /** Holds the offsets of planes in bytes. */
   uint32_t offset[NVBUF_MAX_PLANES];
-  /** size of planes in bytes */
+  /** Holds the sizes of planes in bytes. */
   uint32_t psize[NVBUF_MAX_PLANES];
-  /** bytes taken for each pixel */
+  /** Holds the number of bytes occupied by a pixel in each plane. */
   uint32_t bytesPerPix[NVBUF_MAX_PLANES];
 
   void * _reserved[STRUCTURE_PADDING * NVBUF_MAX_PLANES];
 } NvBufSurfacePlaneParams;
 
 /**
- * Hold parameters required to allocate NvBufSurface.
+ * Holds parameters required to allocate an \ref NvBufSurface.
  */
 typedef struct NvBufSurfaceCreateParams {
-  /** GPU id - valid for multi GPU system */
+  /** Holds the GPU ID. Valid only for a multi-GPU system. */
   uint32_t gpuId;
-  /** width of buffer */
+  /** Holds the width of the buffer. */
   uint32_t width;
-  /** height of buffer */
+  /** Holds the height of the buffer. */
   uint32_t height;
-  /** optional but if set memory of that size will be allocated and
-   *  all other parameters (width, height etc.) will be ignored */
+  /** Holds the amount of memory to be allocated. Optional; if set, all other
+   parameters (width, height, etc.) are ignored. */
   uint32_t size;
-  /** optional but if set contiguous memory is allocated for batch.
-   *  valid for CUDA memory types only.*/
+  /** Holds a "contiguous memory" flag. If set, contiguous memory is allocated
+   for the batch. Valid only for CUDA memory types. */
   bool isContiguous;
-  /** color format of buffer */
+  /** Holds the color format of the buffer. */
   NvBufSurfaceColorFormat colorFormat;
-  /** BL or PL for Jetson, ONLY PL in case of dGPU */
+  /** Holds the surface layout. May be Block Linear (BL) or Pitch Linear (PL).
+   For a dGPU, only PL is valid. */
   NvBufSurfaceLayout layout;
-  /** type of memory to be allocated */
+  /** Holds the type of memory to be allocated. */
   NvBufSurfaceMemType memType;
 } NvBufSurfaceCreateParams;
 
 /**
- * Hold the pointers of mapped buffer.
+ * Holds pointers for a mapped buffer.
  */
 typedef struct NvBufSurfaceMappedAddr {
-  /** plane wise pointers to CPU mapped buffer */
+  /** Holds planewise pointers to a CPU mapped buffer. */
   void * addr[NVBUF_MAX_PLANES];
-  /** pointer to mapped EGLImage */
+  /** Holds a pointer to a mapped EGLImage. */
   void *eglImage;
 
   void * _reserved[STRUCTURE_PADDING];
 } NvBufSurfaceMappedAddr;
 
 /**
- * Hold the information of single buffer in the batch.
+ * Holds information about a single buffer in a batch.
  */
 typedef struct NvBufSurfaceParams {
-  /** width of buffer */
+  /** Holds the width of the buffer. */
   uint32_t width;
-  /** height of buffer */
+  /** Holds the height of the buffer. */
   uint32_t height;
-  /** pitch of buffer */
+  /** Holds the pitch of the buffer. */
   uint32_t pitch;
-  /** color format */
+  /** Holds the color format of the buffer. */
   NvBufSurfaceColorFormat colorFormat;
-  /** BL or PL for Jetson, ONLY PL in case of dGPU */
+  /** Holds BL or PL. For dGPU, only PL is valid. */
   NvBufSurfaceLayout layout;
-  /** dmabuf fd in case of NVBUF_MEM_SURFACE_ARRAY and NVBUF_MEM_HANDLE type memory.
-   *  Invalid for other types.
-   */
+  /** Holds a DMABUF FD. Valid only for \ref NVBUF_MEM_SURFACE_ARRAY and
+   \ref NVBUF_MEM_HANDLE type memory. */
   uint64_t bufferDesc;
-  /** size of allocated memory */
+  /** Holds the amount of allocated memory. */
   uint32_t dataSize;
-  /** pointer to allocated memory, Not valid for
-   *  NVBUF_MEM_SURFACE_ARRAY and NVBUF_MEM_HANDLE
-   */
+  /** Holds a pointer to allocated memory. Not valid for
+   \ref NVBUF_MEM_SURFACE_ARRAY or \ref NVBUF_MEM_HANDLE. */
   void * dataPtr;
-  /** plane wise info (w, h, p, offset etc.) */
+  /** Holds planewise information (width, height, pitch, offset, etc.). */
   NvBufSurfacePlaneParams planeParams;
-  /** pointers of mapped buffers. Null Initialized values.*/
+  /** Holds pointers to mapped buffers. Initialized to NULL
+   when the structure is created. */
   NvBufSurfaceMappedAddr mappedAddr;
 
   void * _reserved[STRUCTURE_PADDING];
 } NvBufSurfaceParams;
 
 /**
- * Hold the information of batched buffers.
+ * Holds information about batched buffers.
  */
 typedef struct NvBufSurface {
-  /** GPU id - valid for multiple GPU system */
+  /** Holds a GPU ID. Valid only for a multi-GPU system. */
   uint32_t gpuId;
-  /** batch size */
+  /** Holds the batch size. */
   uint32_t batchSize;
-  /** valid / filled buffers, Zero initialized */
+  /** Holds the number valid and filled buffers. Initialized to zero when
+   an instance of the structure is created. */
   uint32_t numFilled;
-  /** check if memory allocated for batch is contiguous. */
+  /** Holds an "is contiguous" flag. If set, memory allocated for the batch
+   is contiguous. */
   bool isContiguous;
-  /** type of memory of buffers in batch */
+  /** Holds type of memory for buffers in the batch. */
   NvBufSurfaceMemType memType;
-  /** Pointer to array of batched buffers */
+  /** Holds a pointer to an array of batched buffers. */
   NvBufSurfaceParams *surfaceList;
 
   void * _reserved[STRUCTURE_PADDING];
 } NvBufSurface;
 
 /**
- * Allocate batch of buffers.
+ * \brief  Allocates a batch of buffers.
  *
- * Allocates memory for batchSize buffers and returns in *surf a pointer to allocated NvBufSurface.
- * params structure should have allocation parameters of single buffer. If size field in
- * params is set, buffer of that size will be allocated and all other
- * parameters (w, h, color format etc.) will be ignored.
+ * Allocates memory for \a batchSize buffers and returns a pointer to an
+ * allocated \ref NvBufSurface. The \a params structure must have
+ * the allocation parameters of a single buffer. If \a params.size
+ * is set, a buffer of that size is allocated, and all other
+ * parameters (width, height, color format, etc.) are ignored.
  *
- * Use NvBufSurfaceDestroy to free all the resources.
+ * Call NvBufSurfaceDestroy() to free resources allocated by this function.
  *
- * @param[out] surf pointer to allocated batched buffers.
- * @param[in] batchSize batch size of buffers.
- * @param[in] params pointer to NvBufSurfaceCreateParams structure.
+ * @param[out] surf         An indirect pointer to the allocated batched
+ *                           buffers.
+ * @param[in]  batchSize    Batch size of buffers.
+ * @param[in]  params       A pointer to an \ref NvBufSurfaceCreateParams
+ *                           structure.
  *
- * @return 0 for success, -1 for failure.
+ * @return 0 if successful, or -1 otherwise.
  */
 int NvBufSurfaceCreate (NvBufSurface **surf, uint32_t batchSize,
                         NvBufSurfaceCreateParams *params);
 
 /**
- * Free the batched buffers previously allocated through NvBufSurfaceCreate.
+ * \brief  Frees batched buffers previously allocated by NvBufSurfaceCreate().
  *
- * @param[in] surf pointer to NvBufSurface to free.
+ * @param[in] surf  A pointer to an \ref NvBufSurface to be freed.
  *
- * @return 0 for success, -1 for failure.
+ * @return 0 if successful, or -1 otherwise.
  */
 int NvBufSurfaceDestroy (NvBufSurface *surf);
 
 /**
- * Map HW batched buffers to HOST / CPU address space.
+ * \brief  Maps hardware batched buffers to the HOST or CPU address space.
  *
- * Valid for NVBUF_MEM_CUDA_UNIFIED type of memory for dGPU and
- * NVBUF_MEM_SURFACE_ARRAY and NVBUF_MEM_HANDLE type of memory for Jetson.
+ * Valid for \ref NVBUF_MEM_CUDA_UNIFIED type memory for dGPU and
+ * \ref NVBUF_MEM_SURFACE_ARRAY and \ref NVBUF_MEM_HANDLE type memory for
+ * Jetson.
  *
- * This function will fill addr array of NvBufSurfaceMappedAddr field of NvBufSurfaceParams
- * with the CPU mapped memory pointers.
+ * This function fills an array of pointers at
+ * \a surf->surfaceList->mappedAddr->addr.
+ * \a surf is a pointer to an \ref NvBufSurface.
+ * \a surfaceList is a pointer to an \ref NvBufSurfaceParams.
+ * \a mappedAddr is a pointer to an \ref NvBufSurfaceMappedAddr.
+ * \a addr is declared as an array of pointers to void, and holds pointers
+ * to the buffers.
  *
- * The client must call NvBufSurfaceSyncForCpu() with the virtual address populated
- * by this function before accessing the mapped memory in CPU.
+ * The client must call NvBufSurfaceSyncForCpu() with the virtual address
+ * populated by this function before accessing mapped memory in the CPU.
  *
  * After memory mapping is complete, mapped memory modification
- * must be coordinated between the CPU and hardware device as
+ * must be coordinated between the CPU and the hardware device as
  * follows:
- * - CPU: If the CPU modifies any mapped memory, the client must call
+ * - CPU: If the CPU modifies mapped memory, the client must call
  *   NvBufSurfaceSyncForDevice() before any hardware device accesses the memory.
- * - Hardware device: If the mapped memory is modified by any hardware device,
- *   the client must call NvBufSurfaceSyncForCpu() before CPU accesses the memory.
+ * - Hardware device: If a hardware device modifies mapped memory, the client
+ *   must call NvBufSurfaceSyncForCpu() before the CPU accesses the memory.
  *
  * Use NvBufSurfaceUnMap() to unmap buffer(s) and release any resource.
  *
- * @param[in] surf pointer to NvBufSurface structure.
- * @param[in] index index of buffer in the batch. -1 for all buffers in batch.
- * @param[in] plane index of plane in buffer. -1 for all planes in buffer.
- * @param[in] type flag for mapping type.
+ * @param[in,out] surf  A pointer to an NvBufSurface structure. The function
+ *                      stores pointers to the buffers in a descendant of this
+ *                      structure; see the notes above.
+ * @param[in] index     Index of a buffer in the batch. -1 refers to all buffers
+ *                      in the batch.
+ * @param[in] plane     Index of a plane in buffer. -1 refers to all planes
+ *                      in the buffer.
+ * @param[in] type      A flag for mapping type.
  *
- * @return 0 for success, -1 for failure.
+ * @return 0 if successful, or -1 otherwise.
  */
 int NvBufSurfaceMap (NvBufSurface *surf, int index, int plane, NvBufSurfaceMemMapFlags type);
 
 /**
- * Unmap the previously mapped buffer(s).
+ * \brief  Unmaps previously mapped buffer(s).
  *
- * @param[in] surf pointer to NvBufSurface structure.
- * @param[in] index index of buffer in the batch. -1 for all buffers in batch.
- * @param[in] plane index of plane in buffer. -1 for all planes in buffer.
+ * @param[in] surf      A pointer to an \ref NvBufSurface structure.
+ * @param[in] index     Index of a buffer in the batch. -1 indicates
+ *                      all buffers in the batch.
+ * @param[in] plane     Index of a plane in the buffer. -1 indicates
+ *                      all planes in the buffer.
  *
- * @return 0 for success, -1 for failure.
+ * @return  0 if successful, or -1 otherwise.
  */
 int NvBufSurfaceUnMap (NvBufSurface *surf, int index, int plane);
 
 /**
- * Copy the memory content of source batched buffer(s) to memory of destination
+ * \brief  Copies the content of source batched buffer(s) to destination
  * batched buffer(s).
  *
- * This function can be used to copy source buffer(s) of one memory type
- * to destination buffer(s) of different memory type.
- * e.g. CUDA Host to CUDA Device or malloced memory to CUDA device etc.
+ * You can use this function to copy source buffer(s) of one memory type
+ * to destination buffer(s) of another memory type,
+ * e.g. CUDA host to CUDA device, malloc'ed memory to CUDA device, etc.
  *
- * Both source and destination NvBufSurface must have same buffer and batch size.
+ * The source and destination \ref NvBufSurface objects must have same
+ * buffer and batch size.
  *
- * @param[in] srcSurf pointer to source NvBufSurface structure.
- * @param[in] dstSurf pointer to destination NvBufSurface structure.
+ * @param[in] srcSurf   A pointer to the source NvBufSurface structure.
+ * @param[in] dstSurf   A pointer to the destination NvBufSurface structure.
  *
- * @return 0 for success, -1 for failure.
+ * @return 0 if successful, or -1 otherwise.
  */
 int NvBufSurfaceCopy (NvBufSurface *srcSurf, NvBufSurface *dstSurf);
 
 /**
- * Syncs the HW memory cache for the CPU.
+ * \brief  Syncs the hardware memory cache for the CPU.
  *
- * Valid only for NVBUF_MEM_SURFACE_ARRAY and NVBUF_MEM_HANDLE memory types.
+ * Valid only for memory types \ref NVBUF_MEM_SURFACE_ARRAY and
+ * \ref NVBUF_MEM_HANDLE.
  *
- * @param[in] surf pointer to NvBufSurface structure.
- * @param[in] index index of buffer in the batch. -1 for all buffers in batch.
- * @param[in] plane index of plane in buffer. -1 for all planes in buffer.
+ * @param[in] surf      A pointer to an \ref NvBufSurface structure.
+ * @param[in] index     Index of the buffer in the batch. -1 refers to
+ *                      all buffers in the batch.
+ * @param[in] plane     Index of a plane in the buffer. -1 refers to all planes
+ *                      in the buffer.
  *
- * @return 0 for success, -1 for failure.
+ * @return 0 if successful, or -1 otherwise.
  */
 int NvBufSurfaceSyncForCpu (NvBufSurface *surf, int index, int plane);
 
 /**
- * Syncs the HW memory cache for the device.
+ * \brief  Syncs the hardware memory cache for the device.
  *
- * Valid only for NVBUF_MEM_SURFACE_ARRAY and NVBUF_MEM_HANDLE memory types.
+ * Valid only for memory types \ref NVBUF_MEM_SURFACE_ARRAY and
+ * \ref NVBUF_MEM_HANDLE.
  *
- * @param[in] surf pointer to NvBufSurface structure.
- * @param[in] index index of buffer in the batch. -1 for all buffers in batch.
- * @param[in] plane index of plane in buffer. -1 for all planes in buffer.
+ * @param[in] surf      A pointer to an \ref NvBufSurface structure.
+ * @param[in] index     Index of a buffer in the batch. -1 refers to all buffers
+ *                      in the batch.
+ * @param[in] plane     Index of a plane in the buffer. -1 refers to all planes
+ *                      in the buffer.
  *
- * @return 0 for success, -1 for failure.
+ * @return 0 if successful, or -1 otherwise.
  */
 int NvBufSurfaceSyncForDevice (NvBufSurface *surf, int index, int plane);
 
 /**
- * Get the NvBufSurface from the dmabuf fd.
+ * \brief  Gets the \ref NvBufSurface from the DMABUF FD.
  *
- * @param[in] dmabuf_fd dmabuf fd of the buffer.
- * @param[out] buffer pointer to NvBufSurface.
+ * @param[in]  dmabuf_fd    DMABUF FD of the buffer.
+ * @param[out] buffer       A pointer to the NvBufSurface.
  *
- * @return 0 for success, -1 for failure.
+ * @return 0 for success, or -1 otherwise.
  */
 int NvBufSurfaceFromFd (int dmabuf_fd, void **buffer);
 
 /**
- * Fill each byte of buffer(s) in NvBufSurface with provided value.
+ * \brief  Fills each byte of the buffer(s) in an \ref NvBufSurface with a
+ * provided value.
  *
- * This function can also be used to reset the buffer(s) in the batch.
+ * You can also use this function to reset the buffer(s) in the batch.
  *
- * @param[in] surf pointer to NvBufSurface structure.
- * @param[in] index index of buffer in the batch. -1 for all buffers in batch.
- * @param[in] plane index of plane in buffer. -1 for all planes in buffer.
- * @param[in] value value to be set.
+ * @param[in] surf  A pointer to the NvBufSurface structure.
+ * @param[in] index Index of a buffer in the batch. -1 refers to all buffers
+ *                  in the batch.
+ * @param[in] plane Index of a plane in the buffer. -1 refers to all planes
+ *                  in the buffer.
+ * @param[in] value The value to be used as fill.
  *
- * @return 0 for success, -1 for failure.
+ * @return 0 if successful, or -1 otherwise.
  */
 int NvBufSurfaceMemSet (NvBufSurface *surf, int index, int plane, uint8_t value);
 
 /**
- * Creates an EGLImage from memory of NvBufSurface buffer(s).
+ * \brief  Creates an EGLImage from the memory of one or more
+ * \ref NvBufSurface buffers.
  *
- * Only memory type NVBUF_MEM_SURFACE_ARRAY is supported.
- * This function will set eglImage pointer of NvBufSurfaceMappedAddr field of NvBufSurfaceParams
- * with EGLImageKHR.
+ * Only memory type \ref NVBUF_MEM_SURFACE_ARRAY is supported.
  *
- * This function can be used in scenarios where CUDA operation on Jetson HW
- * memory (NVBUF_MEM_SURFACE_ARRAY) is required. EGLImageKHR provided by this
- * function can then be register with CUDA for further CUDA operations.
+ * This function returns the created EGLImage by storing its address at
+ * \a surf->surfaceList->mappedAddr->eglImage. (\a surf is a pointer to
+ * an NvBufSurface. \a surfaceList is a pointer to an \ref NvBufSurfaceParams.
+ * \a mappedAddr is a pointer to an \ref NvBufSurfaceMappedAddr.
+ * \a eglImage is declared as a pointer to void, and holds an
+ * EGLImageKHR.)
  *
- * @param[in] surf pointer to NvBufSurface structure.
- * @param[in] index index of buffer in the batch. -1 for all buffers in batch.
+ * You can use this function in scenarios where a CUDA operation on Jetson
+ * hardware memory (identified by \ref NVBUF_MEM_SURFACE_ARRAY) is required.
+ * The EGLImageKHR struct provided by this function can then be registered
+ * with CUDA for further CUDA operations.
  *
- * @return 0 for success, -1 for failure.
+ * @param[in,out] surf  A pointer to an NvBufSurface structure. The function
+ *                      stores a pointer to the created EGLImage in
+ *                      a descendant of this structure; see the notes above.
+ * @param[in]     index Index of a buffer in the batch. -1 specifies all buffers
+ *                      in the batch.
+ *
+ * @return 0 for success, or -1 otherwise.
  */
 int NvBufSurfaceMapEglImage (NvBufSurface *surf, int index);
 
 /**
- * Destroy the previously created EGLImage(s).
+ * \brief  Destroys the previously created EGLImage object(s).
  *
- * @param[in] surf pointer to NvBufSurface structure.
- * @param[in] index index of buffer in the batch. -1 for all buffers in batch.
+ * @param[in] surf      A pointer to an \ref NvBufSurface structure.
+ * @param[in] index     The index of a buffer in the batch. -1 specifies all
+ *                      buffers in the batch.
  *
- * @return 0 for success, -1 for failure.
+ * @return 0 if successful, or -1 otherwise.
  */
 int NvBufSurfaceUnMapEglImage (NvBufSurface *surf, int index);
 

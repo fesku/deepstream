@@ -15,8 +15,8 @@
  *
  * This file specifies the NvBufSurfTransform image transformation APIs.
  *
- * NvBufSurfTransform APIs provides methods to set / get session parameters
- * and transform / composite APIs.
+ * The NvBufSurfTransform API provides methods to set and get session parameters
+ * and to transform and composite APIs.
  */
 #ifndef NVBUFSURFTRANSFORM_H_
 #define NVBUFSURFTRANSFORM_H_
@@ -31,237 +31,249 @@ extern "C" {
 #endif
 
 /** @name NvBufSurfTransform types and functions.
- * This section describes types and functions of NvBufSurfTransform application
- * programming interface.
+ * This section describes types and functions of the \ref NvBufSurfTransform
+ * application programming interface.
  */
 
 /** @{ */
 /**
- *  Defines compute devices used by NvBufSurfTransform.
+ * Specifies compute devices used by \ref NvBufSurfTransform.
  */
 typedef enum
 {
-  /** Use VIC as compute device for Jetson or GPU for x86_64 system */
+  /** Specifies VIC as a compute device for Jetson or dGPU for an x86_64
+   system. */
   NvBufSurfTransformCompute_Default,
-  /** Use GPU as compute device */
+  /** Specifies that the GPU is the compute device. */
   NvBufSurfTransformCompute_GPU,
-  /** Use VIC as compute device, only applicable for Jetson */
+  /** Specifies that the VIC as a compute device. Supported only for Jetson. */
   NvBufSurfTransformCompute_VIC
 } NvBufSurfTransform_Compute;
 
 
 /**
- * Defines video flip methods. Only Supported for Jetson
+ * Specifies video flip methods. Supported only for Jetson.
  */
 typedef enum
 {
-  /** Video flip none. */
+  /** Specifies no video flip. */
   NvBufSurfTransform_None,
-  /** Video flip rotate 90 degree clockwise. */
+  /** Specifies rotating 90 degrees clockwise. */
   NvBufSurfTransform_Rotate90,
-  /** Video flip rotate 180 degree clockwise. */
+  /** Specifies rotating 180 degree clockwise. */
   NvBufSurfTransform_Rotate180,
-  /** Video flip rotate 270 degree clockwise. */
+  /** Specifies rotating 270 degree clockwise. */
   NvBufSurfTransform_Rotate270,
-  /** Video flip with respect to X-axis. */
+  /** Specifies video flip with respect to the X-axis. */
   NvBufSurfTransform_FlipX,
-  /** Video flip with respect to Y-axis. */
+  /** Specifies video flip with respect to the Y-axis. */
   NvBufSurfTransform_FlipY,
-  /** Video flip transpose. */
+  /** Specifies video flip transpose. */
   NvBufSurfTransform_Transpose,
-  /** Video flip inverse transpose. */
+  /** Specifies video flip inverse transpose. */
   NvBufSurfTransform_InvTranspose,
 } NvBufSurfTransform_Flip;
 
 
 /**
- * Defines video interpolation methods.
+ * Specifies video interpolation methods.
  */
 typedef enum
 {
-  /** Nearest Interpolation Method */
+  /** Specifies Nearest Interpolation Method interpolation. */
   NvBufSurfTransformInter_Nearest = 0,
-  /** Bilinear Interpolation Method */
+  /** Specifies Bilinear Interpolation Method interpolation. */
   NvBufSurfTransformInter_Bilinear,
-  /** GPU-Cubic, VIC-5 Tap  */
+  /** Specifies GPU-Cubic, VIC-5 Tap interpolation. */
   NvBufSurfTransformInter_Algo1,
-  /** GPU-Super, VIC-10 Tap  */
+  /** Specifies GPU-Super, VIC-10 Tap interpolation. */
   NvBufSurfTransformInter_Algo2,
-  /** GPU-Lanzos, VIC-Smart*/
+  /** Specifies GPU-Lanzos, VIC-Smart interpolation. */
   NvBufSurfTransformInter_Algo3,
-  /** GPU-Ignored, VIC-Nicest*/
+  /** Specifies GPU-Ignored, VIC-Nicest interpolation. */
   NvBufSurfTransformInter_Algo4,
-  /** GPU-Nearest, VIC-Nearest */
+  /** Specifies GPU-Nearest, VIC-Nearest interpolation. */
   NvBufSurfTransformInter_Default
 } NvBufSurfTransform_Inter;
 
 /**
- * Defines Error codes returned by NvBufSurfTransform APIs.
+ * Specifies error codes returned by \ref NvBufSurfTransform functions.
  */
 typedef enum
 {
-  /** Error in source or destination ROI */
+  /** Specifies an error in source or destination ROI. */
   NvBufSurfTransformError_ROI_Error = -4,
-  /** Invalid input parameters */
+  /** Specifies invalid input parameters. */
   NvBufSurfTransformError_Invalid_Params = -3,
-  /** Runtime execution Error */
+  /** Specifies a runtime execution error. */
   NvBufSurfTransformError_Execution_Error = -2,
-  /** Unsupported Feature/Format */
+  /** Specifies an unsupported feature or format. */
   NvBufSurfTransformError_Unsupported = -1,
-  /** Operation successful */
+  /** Specifies a successful operation. */
   NvBufSurfTransformError_Success = 0
 } NvBufSurfTransform_Error;
 
 /**
- * Defines flags to indicate for valid transform.
+ * Specifies transform types.
  */
 typedef enum {
-  /** transform flag to crop source rectangle. */
+  /** Specifies a transform to crop the source rectangle. */
   NVBUFSURF_TRANSFORM_CROP_SRC   = 1,
-  /** transform flag to crop destination rectangle. */
+  /** Specifies a transform to crop the destination rectangle. */
   NVBUFSURF_TRANSFORM_CROP_DST   = 1 << 1,
-  /** transform flag to set filter type. */
+  /** Specifies a transform to set the filter type. */
   NVBUFSURF_TRANSFORM_FILTER     = 1 << 2,
-  /** transform flag to set flip method. */
+  /** Specifies a transform to set the flip method. */
   NVBUFSURF_TRANSFORM_FLIP       = 1 << 3,
 } NvBufSurfTransform_Transform_Flag;
 
 /**
- * Defines flags that specify valid composition operations.
+ * Specifies types of composition operations.
  */
 typedef enum {
-  /** flag to set for composition. */
+  /** Specifies a flag to describe the requested compositing operation. */
   NVBUFSURF_TRANSFORM_COMPOSITE  = 1,
 } NvBufSurfTransform_Composite_Flag;
 
 /**
- * Holds coordinates for a rectangle.
+ * Holds the coordinates of a rectangle.
  */
 typedef struct
 {
-  /** rectangle top. */
+  /** Holds the rectangle top. */
   uint32_t top;
-  /** rectangle left. */
+  /** Holds the rectangle left side. */
   uint32_t left;
-  /** rectangle width. */
+  /** Holds the rectangle width. */
   uint32_t width;
-  /** rectangle height. */
+  /** Holds the rectangle height. */
   uint32_t height;
 }NvBufSurfTransformRect;
 
 /**
- * Holds configuration parameters for Transform/Composite Session.
+ * Holds configuration parameters for a transform/composite session.
  */
 typedef struct _NvBufSurfTransformConfigParams
 {
-  /** Mode of operation, VIC (Jetson) or GPU (iGPU + dGPU) if VIC configured,
-   * gpu_id will be ignored */
+  /** Holds the mode of operation: VIC (Jetson) or GPU (iGPU + dGPU)
+   If VIC is configured, \a gpu_id is ignored. */
   NvBufSurfTransform_Compute compute_mode;
 
-  /** GPU ID to be used for processing */
+  /** Holds the GPU ID to be used for processing. */
   int32_t gpu_id;
 
-  /** User configure stream to be used, if NULL
-   * default stream will be used
-   * ignored if VIC is used */
+  /** User configure stream to be used. If NULL, the default stream is used.
+   Ignored if VIC is used. */
   cudaStream_t cuda_stream;
 
 } NvBufSurfTransformConfigParams;
 
 /**
- * Holds Transform parameters for Transform Call.
+ * Holds transform parameters for a transform call.
  */
 typedef struct _NvBufSurfaceTransformParams
 {
-  /** flag to indicate which of the transform
-   *parameters are valid. */
+  /** Holds a flag that indicates which transform parameters are valid. */
   uint32_t transform_flag;
-  /** flip method. */
+  /** Holds the flip method. */
   NvBufSurfTransform_Flip transform_flip;
-  /** transform filter. */
+  /** Holds a transform filter. */
   NvBufSurfTransform_Inter transform_filter;
-  /** list of source rectangle coordinates
-   * for crop operation */
+  /** Holds a pointer to a list of source rectangle coordinates for
+   a crop operation. */
   NvBufSurfTransformRect *src_rect;
-  /** list of destination rectangle
-   * coordinates for crop operation. */
+  /** Holds a pointer to list of destination rectangle coordinates for
+   a crop operation. */
   NvBufSurfTransformRect *dst_rect;
 }NvBufSurfTransformParams;
 
 /**
- * Holds Composite parameters for Composite Call.
+ * Holds composite parameters for a composite call.
  */
 typedef struct _NvBufSurfTransformCompositeParams
 {
-  /** flag to indicate which of the composition parameters are valid. */
+  /** Holds a flag that indicates which composition parameters are valid. */
   uint32_t composite_flag;
-  /** number of the input buffers to be composited. */
+  /** Holds the number of input buffers to be composited. */
   uint32_t input_buf_count;
- /** source rectangle coordinates of input buffers for composition. */
+ /** Holds source rectangle coordinates of input buffers for compositing. */
   NvBufSurfTransformRect *src_comp_rect;
-  /** destination rectangle coordinates of input buffers for composition. */
+  /** Holds destination rectangle coordinates of input buffers for
+   compositing. */
   NvBufSurfTransformRect *dst_comp_rect;
 }NvBufSurfTransformCompositeParams;
 
 /**
- * Set user defined session parameters to be used, if default session is not
- * to be used by NvBufSurfTransform
+ * \brief  Sets user-defined session parameters.
  *
- * @param[in] config_params pointer, populated with session params to be used.
+ * If user-defined session parameters are set, they override the
+ * NvBufSurfTransform() function's default session.
  *
- * @return NvBufSurfTransform_Error notifying succes or failure.
+ * @param[in] config_params     A pointer to a structure that is populated
+ *                              with the session parameters to be used.
+ *
+ * @return  An \ref NvBufSurfTransform_Error value indicating
+ *  success or failure.
  */
 NvBufSurfTransform_Error NvBufSurfTransformSetSessionParams
 (NvBufSurfTransformConfigParams *config_params);
 
 /**
- * Get current session parameters used by NvBufSurfTransform
+ * \brief Gets the session parameters used by NvBufSurfTransform().
  *
- * @param[out] config_params pointer(caller allocated), populated with session params used.
+ * @param[out] config_params    A pointer to a caller-allocated structure to be
+ *                              populated with the session parameters used.
  *
- * @return NvBufSurfTransform_Error notifying succes or failure.
+ * @return  An \ref NvBufSurfTransform_Error value indicating
+ *  success or failure.
  */
-
 NvBufSurfTransform_Error NvBufSurfTransformGetSessionParams
 (NvBufSurfTransformConfigParams *config_params);
 
 /**
- * Performs Transformation on batched input images
+ * \brief Performs a transformation on batched input images.
  *
- * Transforms batched input pointed by src pointer. Transformation includes
- * scaling / format conversion croping for both source and destination, and
- * all of the above in combination, flip / rotation is supported on VIC, dst
- * pointer is user allocated. Type of Transformation to be done is set in transform_params
- * In case of destination cropping the memory other than crop location is not
- * touched and may have stale information,  its callers
- * responsibility to memset it if required before sending for transformation
+ * If user-defined session parameters are to be used, call
+ * NvBufSurfTransformSetSessionParams() before calling this function.
  *
- * Use NvBufSurfTransformSetSessionParams before each call, if user defined
- * session parameters are to be used.
- *
- * @param[in] src pointer to input batched buffers to be transformed.
- * @param[out] dst pointer to where transformed output would be stored.
- * @param[in] transform_params pointer to NvBufSurfTransformParams structure.
- *
- * @return NvBufSurfTransform_Error indicating success or failure.
+ * @param[in]  src  A pointer to input batched buffers to be transformed.
+ * @param[out] dst  A pointer to a caller-allocated location where
+ *                  transformed output is to be stored.
+ *                  @par When destination cropping is performed, memory outside
+ *                  the crop location is not touched, and may contain stale
+ *                  information. The caller must perform a memset before
+ *                  calling this function if stale information must be
+ *                  eliminated.
+ * @param[in]  transform_params
+ *                  A pointer to an \ref NvBufSurfTransformParams structure
+ *                  which specifies the type of transform to be performed. They
+ *                  may include any combination of scaling, format conversion,
+ *                  and cropping for both source and destination.
+ *                  Flipping and rotation are supported on VIC.
+ * @return  An \ref NvBufSurfTransform_Error value indicating
+ *  success or failure.
  */
 NvBufSurfTransform_Error NvBufSurfTransform (NvBufSurface *src, NvBufSurface *dst,
     NvBufSurfTransformParams *transform_params);
 
 /**
- * Performs Composition on batched input images
+ * \brief  Composites batched input images.
  *
- * Composites batched input pointed by src pointer. Compositer scales and stitches
- * batched buffers pointed by src into single dst buffer, the parameters for
- * location to be composited is provided by composite_params
- * Use NvBufSurfTransformSetSessionParams before each call, if user defined
- * session parameters are to be used.
+ * The compositer scales and stitches
+ * batched buffers indicated by \a src into a single destination buffer, \a dst.
  *
- * @param[in] src pointer to input batched buffers to be transformed.
- * @param[out] dst pointer (single buffer) where composited output would be stored.
- * @param[in] composite_params pointer to NvBufSurfTransformCompositeParams structure.
+ * If user-defined session parameters are to be used, call
+ * NvBufSurfTransformSetSessionParams() before calling this function.
  *
- * @return NvBufSurfTransform_Error indicating success or failure.
+ * @param[in]  src  A pointer to input batched buffers to be transformed.
+ * @param[out] dst  A pointer a caller-allocated location (a single buffer)
+ *                  where composited output is to be stored.
+ * @param[in]  composite_params
+ *                  A pointer to an \ref NvBufSurfTransformCompositeParams
+ *                  structure which specifies the compositing operation to be
+ *                  performed, e.g., the source and destination rectangles
+ *                  in \a src and \a dst.
+ * @return An \ref NvBufSurfTransform_Error value indicating success or failure.
  */
 NvBufSurfTransform_Error NvBufSurfTransformComposite (NvBufSurface *src,
     NvBufSurface *dst, NvBufSurfTransformCompositeParams *composite_params);

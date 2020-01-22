@@ -176,10 +176,10 @@ Step 2: Create Dockerfile for building new DeepStream docker image for jetson wh
 
 $ cat <<EOF > Dockerfile
 #==============================================================================
-FROM nvcr.io/nvidia/deepstream-l4t:4.0.1-19.08
-ADD test5_config_new.txt /root/deepstream_sdk_v4.0.1_jetson/sources/apps/sample_apps/deepstream-test5/configs/
+FROM nvcr.io/nvidia/deepstream-l4t:<tag>
+ADD test5_config_new.txt /root/deepstream_sdk_v<ds-version>_jetson/sources/apps/sample_apps/deepstream-test5/configs/
 CMD ["/bin/bash"]
-WORKDIR /root/deepstream_sdk_v4.0.1_jetson/
+WORKDIR /root/deepstream_sdk_v<ds-version>_jetson/
 #==============================================================================
 EOF
 
@@ -220,18 +220,18 @@ $ docker build -t my_ds4:1 .
 
   Deployment modules:
   Add new module:
-  - Name:    ds4.0.1_test5
+  - Name:    ds<ds-version>_test5
 
   - Image URI:
-         For x86:     nvcr.io/nvidia/deepstream:4.0.1-19.08
-         For jetson:  nvcr.io/nvidia/deepstream-l4t:4.0.1-19.08
+         For x86:     nvcr.io/nvidia/deepstream:<tag>
+         For jetson:  nvcr.io/nvidia/deepstream-l4t:<tag>
 
   - container Create options:
     {
       "HostConfig": {
         "Runtime": "nvidia"
       },
-      "WorkingDir": "/root/deepstream_sdk_v4.0.1_jetson/sources/apps/sample_apps/deepstream-test5/configs/",
+      "WorkingDir": "/root/deepstream_sdk_v<ds-version>_jetson/sources/apps/sample_apps/deepstream-test5/configs/",
       "ENTRYPOINT": [
         "/usr/bin/deepstream-test5-app",
         "-c",
@@ -275,7 +275,7 @@ $ docker build -t my_ds4:1 .
   sudo iotedge list
 
   #check output from the modules
-  sudo iotedge logs ds4.0.1_test5
+  sudo iotedge logs ds<ds-version>_test5
 
 ===============================================================================
 FAQ

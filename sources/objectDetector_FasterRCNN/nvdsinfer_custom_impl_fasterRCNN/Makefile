@@ -22,7 +22,7 @@
 
 CC:= g++
 
-CFLAGS:= -Wall -std=c++11 -shared -fPIC
+CFLAGS:= -Wall -std=c++11 -shared -fPIC -Wno-error=deprecated-declarations
 CFLAGS+= -I../../includes
 
 LIBS:= -lnvinfer -lnvinfer_plugin

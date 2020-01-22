@@ -570,7 +570,11 @@ get_converted_mat (GstDsExample * dsexample, NvBufSurface *input_buf, gint idx,
       CV_8UC4, dsexample->inter_buf->surfaceList[0].mappedAddr.addr[0],
       dsexample->inter_buf->surfaceList[0].pitch);
 
+#if (CV_MAJOR_VERSION >= 4)
+  cv::cvtColor (in_mat, *dsexample->cvmat, cv::COLOR_RGBA2BGR);
+#else
   cv::cvtColor (in_mat, *dsexample->cvmat, CV_RGBA2BGR);
+#endif
 
   if (NvBufSurfaceUnMap (dsexample->inter_buf, 0, 0)){
     goto error;
@@ -859,4 +863,4 @@ dsexample_plugin_init (GstPlugin * plugin)
 GST_PLUGIN_DEFINE (GST_VERSION_MAJOR,
     GST_VERSION_MINOR,
     nvdsgst_dsexample,
-    DESCRIPTION, dsexample_plugin_init, DS_VERSION, LICENSE, BINARY_PACKAGE, URL)
+    DESCRIPTION, dsexample_plugin_init, "4.0", LICENSE, BINARY_PACKAGE, URL)

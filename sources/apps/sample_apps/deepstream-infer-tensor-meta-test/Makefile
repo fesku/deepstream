@@ -36,7 +36,11 @@ LIB_INSTALL_DIR?=/opt/nvidia/deepstream/deepstream-$(NVDS_VERSION)/lib/
 SRCS:= $(wildcard *.cpp)
 INCS:= $(wildcard *.h)
 
-PKGS:= gstreamer-1.0 opencv
+ifeq ($(TARGET_DEVICE),aarch64)
+	PKGS:= gstreamer-1.0 opencv4
+else
+	PKGS:= gstreamer-1.0 opencv
+endif
 
 CFLAGS:= -fPIC -std=c++11    \
          -I ../../../includes \

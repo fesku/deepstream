@@ -15,7 +15,7 @@ LIB:=libnvdsgst_msgbroker.so
 
 NVDS_VERSION:=4.0
 
-CFLAGS+= -fPIC -DDS_VERSION=\"4.0.1\" \
+CFLAGS+= -fPIC -DDS_VERSION=\"4.0.2\" \
 	 -I../../includes
 
 GST_INSTALL_DIR?=/opt/nvidia/deepstream/deepstream-$(NVDS_VERSION)/lib/gst-plugins/

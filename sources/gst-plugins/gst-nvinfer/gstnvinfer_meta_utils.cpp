@@ -69,7 +69,7 @@ attach_metadata_detector (GstNvInfer * nvinfer, GstMiniObject * tensor_out_objec
         obj.width > filter_params.detectionMaxWidth)
       continue;
     if (filter_params.detectionMaxHeight > 0 &&
-        obj.width > filter_params.detectionMaxHeight)
+        obj.height > filter_params.detectionMaxHeight)
       continue;
     if (obj.top < filter_params.roiTopOffset)
       continue;

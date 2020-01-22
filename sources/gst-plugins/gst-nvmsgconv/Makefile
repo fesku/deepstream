@@ -20,7 +20,7 @@ NVDS_VERSION:=4.0
 GST_INSTALL_DIR?=/opt/nvidia/deepstream/deepstream-$(NVDS_VERSION)/lib/gst-plugins/
 LIB_INSTALL_DIR?=/opt/nvidia/deepstream/deepstream-$(NVDS_VERSION)/lib/
 
-CFLAGS+= -fPIC -DDS_VERSION=\"4.0.1\" \
+CFLAGS+= -fPIC -DDS_VERSION=\"4.0.2\" \
 	 -I../../includes \
 	 -I../../libs/nvmsgconv/
 

@@ -1,4 +1,4 @@
-# Copyright (c) 2019 NVIDIA Corporation.  All rights reserved.
+# Copyright (c) 2018 NVIDIA Corporation.  All rights reserved.
 #
 # NVIDIA Corporation and its licensors retain all intellectual property
 # and proprietary rights in and to this software, related documentation
@@ -19,9 +19,9 @@ width=1280
 height=720
 gpu-id=0
 #(0): nvbuf-mem-default - Default memory allocated, specific to particular platform
-#(1): nvbuf-mem-cuda-pinned - Allocate Pinned/Host cuda memory applicable for Tesla
-#(2): nvbuf-mem-cuda-device - Allocate Device cuda memory applicable for Tesla
-#(3): nvbuf-mem-cuda-unified - Allocate Unified cuda memory applicable for Tesla
+#(1): nvbuf-mem-cuda-pinned - Allocate Pinned/Host cuda memory, applicable for Tesla
+#(2): nvbuf-mem-cuda-device - Allocate Device cuda memory, applicable for Tesla
+#(3): nvbuf-mem-cuda-unified - Allocate Unified cuda memory, applicable for Tesla
 #(4): nvbuf-mem-surface-array - Allocate Surface Array memory, applicable for Jetson
 nvbuf-memory-type=0
 
@@ -67,7 +67,8 @@ type=4
 #1=h264 2=h265
 codec=1
 sync=0
-bitrate=4000000
+#iframeinterval=10
+bitrate=400000
 # set below properties in case of RTSPStreaming
 rtsp-port=8554
 udp-port=5400

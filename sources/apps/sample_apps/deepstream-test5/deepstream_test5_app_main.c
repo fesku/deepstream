@@ -447,7 +447,7 @@ generate_event_msg_meta (gpointer data, gint class_id, gboolean useTs,
   strncpy(meta->objectId, obj_params->obj_label, MAX_LABEL_SIZE);
 
   /** INFO: This API is called once for every 30 frames (now) */
-  if (useTs) {
+  if (useTs && src_uri) {
     ts_generated =
         generate_ts_rfc3339_from_ts (meta->ts, MAX_TIME_STAMP_LEN, ts, src_uri,
         stream_id);

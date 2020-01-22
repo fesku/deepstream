@@ -26,13 +26,12 @@
 #   gpu-id
 #   ll-lib-file: path to low-level tracker lib
 #   ll-config-file: required for NvDCF, optional for KLT and IOU
-#   enable-batch-process: always set to 1
 #
 [tracker]
 tracker-width=640
 tracker-height=368
 gpu-id=0
-#ll-lib-file=/opt/nvidia/deepstream/deepstream-4.0/lib/libnvds_mot_klt.so
-ll-lib-file=/opt/nvidia/deepstream/deepstream-4.0/lib/libnvds_nvdcf.so
-ll-config-file=tracker_config.yml
+ll-lib-file=/opt/nvidia/deepstream/deepstream-4.0/lib/libnvds_mot_klt.so
+#ll-lib-file=/opt/nvidia/deepstream/deepstream-4.0/lib/libnvds_nvdcf.so
+#ll-config-file=tracker_config.yml
 enable-batch-process=1

@@ -24,6 +24,7 @@ CUDA_VER?=
 ifeq ($(CUDA_VER),)
   $(error "CUDA_VER is not set")
 endif
+TARGET_DEVICE = $(shell gcc -dumpmachine | cut -f1 -d -)
 CXX:= g++
 SRCS:= gstdsexample.cpp
 INCS:= $(wildcard *.h)
@@ -35,7 +36,7 @@ DEP:=dsexample_lib/libdsexample.a
 DEP_FILES:=$(wildcard dsexample_lib/dsexample_lib.* )
 DEP_FILES-=$(DEP)
 
-CFLAGS+= -fPIC -DDS_VERSION=\"4.0.1\" \
+CFLAGS+= -fPIC -DDS_VERSION=\"4.0.2\" \
 	 -I /usr/local/cuda-$(CUDA_VER)/include \
 	 -I ../../includes
 
@@ -50,8 +51,12 @@ LIBS := -shared -Wl,-no-undefined \
 	-Wl,-rpath,$(LIB_INSTALL_DIR)
 
 OBJS:= $(SRCS:.cpp=.o)
+ifeq ($(TARGET_DEVICE),aarch64)
+	PKGS:= gstreamer-1.0 gstreamer-base-1.0 gstreamer-video-1.0 opencv4
+else
+	PKGS:= gstreamer-1.0 gstreamer-base-1.0 gstreamer-video-1.0 opencv
+endif
 
-PKGS:= gstreamer-1.0 gstreamer-base-1.0 gstreamer-video-1.0 opencv
 CFLAGS+=$(shell pkg-config --cflags $(PKGS))
 LIBS+=$(shell pkg-config --libs $(PKGS))
 
