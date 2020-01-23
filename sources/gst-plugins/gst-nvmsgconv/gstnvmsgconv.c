@@ -462,4 +462,4 @@ GST_PLUGIN_DEFINE (GST_VERSION_MAJOR,
     GST_VERSION_MINOR,
     nvdsgst_msgconv,
     "Metadata conversion",
-    plugin_init, "4.0", "Proprietary", "NvMsgConv", "http://nvidia.com")
+    plugin_init, DS_VERSION, "Proprietary", "NvMsgConv", "http://nvidia.com")
