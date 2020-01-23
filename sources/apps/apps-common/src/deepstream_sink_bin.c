@@ -439,11 +439,151 @@ start_rtsp_streaming (guint rtsp_port_num, guint updsink_port_num,
 
   gst_rtsp_server_attach (server, NULL);
 
-  g_print
-      ("\n *** DeepStream: Launched RTSP Streaming at rtsp://localhost:%d/ds-test ***\n\n",
-      rtsp_port_num);
+  g_print("\n *** DeepStream: Launched RTSP Streaming at rtsp://localhost:%d/ds-test ***\n\n", rtsp_port_num);
 
   return TRUE;
+}
+
+static gboolean
+create_rtmpsink_bin (NvDsSinkEncoderConfig * config, NvDsSinkBinSubBin * bin)
+{
+	  GstCaps *caps = NULL;
+	  gboolean ret = FALSE;
+	  gchar elem_name[50];
+	  gchar encode_name[50];
+	  gchar rtpdepay_name[50];
+
+	  //guint rtsp_port_num = g_rtsp_port_num++;
+	  uid++;
+
+	  g_snprintf (elem_name, sizeof (elem_name), "sink_sub_bin%d", uid);
+	  bin->bin = gst_bin_new (elem_name);
+	  if (!bin->bin) {
+	    NVGSTDS_ERR_MSG_V ("Failed to create '%s'", elem_name);
+	    goto done;
+	  }
+
+	  g_snprintf (elem_name, sizeof (elem_name), "sink_sub_bin_queue%d", uid);
+	  bin->queue = gst_element_factory_make (NVDS_ELEM_QUEUE, elem_name);
+	  if (!bin->queue) {
+	    NVGSTDS_ERR_MSG_V ("Failed to create '%s'", elem_name);
+	    goto done;
+	  }
+
+	  /*
+	  g_snprintf (elem_name, sizeof (elem_name), "sink_sub_bin_transform%d", uid);
+	  bin->transform = gst_element_factory_make (NVDS_ELEM_VIDEO_CONV, elem_name);
+	  if (!bin->transform) {
+	    NVGSTDS_ERR_MSG_V ("Failed to create '%s'", elem_name);
+	    goto done;
+	  }
+
+	  g_snprintf (elem_name, sizeof (elem_name), "sink_sub_bin_cap_filter%d", uid);
+	  bin->cap_filter = gst_element_factory_make (NVDS_ELEM_CAPS_FILTER, elem_name);
+	  if (!bin->cap_filter) {
+	    NVGSTDS_ERR_MSG_V ("Failed to create '%s'", elem_name);
+	    goto done;
+	  }
+	  */
+	  //caps = gst_caps_from_string ("video/x-raw(memory:NVMM), format=I420");
+	  /*
+	  caps = gst_caps_from_string ("video/x-flv");
+	  g_object_set (G_OBJECT (bin->cap_filter), "caps", caps, NULL);
+	  */
+	  g_snprintf (encode_name, sizeof (encode_name), "sink_sub_bin_encoder%d", uid);
+	  g_snprintf (rtpdepay_name, sizeof (rtpdepay_name), "sink_sub_bin_rtpdepay%d", uid);
+
+	  switch (config->codec) {
+	    case NV_DS_ENCODER_H264:
+	      bin->codecparse = gst_element_factory_make ("h264parse", "h264-parser");
+	      bin->encoder = gst_element_factory_make (NVDS_ELEM_ENC_H264, encode_name);
+	      bin->rtpdepay = gst_element_factory_make ("rtph264depay", rtpdepay_name);
+	      break;
+	    case NV_DS_ENCODER_H265:
+	      bin->codecparse = gst_element_factory_make ("h265parse", "h265-parser");
+	      bin->encoder = gst_element_factory_make (NVDS_ELEM_ENC_H265, encode_name);
+	      bin->rtpdepay = gst_element_factory_make ("rtph265depay", rtpdepay_name);
+	      break;
+	    default:
+	      goto done;
+	  }
+
+	  if (!bin->encoder) {
+	    NVGSTDS_ERR_MSG_V ("Failed to create '%s'", encode_name);
+	    goto done;
+	  }
+
+	  if (!bin->rtpdepay) {
+	    NVGSTDS_ERR_MSG_V ("Failed to create '%s'", rtpdepay_name);
+	    goto done;
+	  }
+
+	  g_object_set (G_OBJECT (bin->encoder), "bitrate", config->bitrate, NULL);
+	  g_object_set (G_OBJECT (bin->encoder), "iframeinterval", config->iframeinterval, NULL);
+
+	#ifdef IS_TEGRA
+	  g_object_set (G_OBJECT (bin->encoder), "preset-level", 1, NULL);
+	  g_object_set (G_OBJECT (bin->encoder), "insert-sps-pps", 1, NULL);
+	  g_object_set (G_OBJECT (bin->encoder), "bufapi-version", 1, NULL);
+	#else
+	  g_object_set (G_OBJECT (bin->transform), "gpu-id", config->gpu_id, NULL);
+	#endif
+	  /*
+	  g_snprintf (elem_name, sizeof (elem_name), "sink_sub_bin_udpsink%d", uid);
+	  bin->sink = gst_element_factory_make ("udpsink", elem_name);
+	  if (!bin->sink) {
+	    NVGSTDS_ERR_MSG_V ("Failed to create '%s'", elem_name);
+	    goto done;
+	  }
+
+	  g_object_set (G_OBJECT (bin->sink), "host", "224.224.255.255", "port",
+	      config->udp_port, "async", FALSE, "sync", 0, NULL);
+	  */
+	  bin->flvmux = gst_element_factory_make ("flvmux", elem_name);
+	  if (!bin->flvmux) {
+	    NVGSTDS_ERR_MSG_V ("Failed to create '%s'", elem_name);
+	    goto done;
+	  }
+	  g_object_set (G_OBJECT (bin->flvmux), "streamable", TRUE, NULL);
+
+	  bin->sink = gst_element_factory_make ("rtmpsink", elem_name);
+	  if (!bin->sink) {
+	    NVGSTDS_ERR_MSG_V ("Failed to create '%s'", elem_name);
+	    goto done;
+	  }
+	  g_object_set (G_OBJECT (bin->sink), "location", config->rtmp_location, "sync", TRUE, NULL);
+
+	  /*
+	  gst_bin_add_many (GST_BIN (bin->bin),
+	      bin->queue, bin->cap_filter, bin->transform,
+	      bin->encoder, bin->codecparse, bin->rtpdepay, bin->flvmux, bin->sink, NULL);
+
+	  NVGSTDS_LINK_ELEMENT (bin->queue, bin->transform);
+	  NVGSTDS_LINK_ELEMENT (bin->transform, bin->cap_filter);
+	  NVGSTDS_LINK_ELEMENT (bin->cap_filter, bin->encoder);
+	  NVGSTDS_LINK_ELEMENT (bin->encoder, bin->rtpdepay);
+	  */
+	  NVGSTDS_LINK_ELEMENT (bin->queue, bin->rtpdepay);
+	  NVGSTDS_LINK_ELEMENT (bin->rtpdepay, bin->codecparse);
+	  NVGSTDS_LINK_ELEMENT (bin->codecparse, bin->flvmux);
+	  NVGSTDS_LINK_ELEMENT (bin->flvmux, bin->sink);
+	  NVGSTDS_BIN_ADD_GHOST_PAD (bin->bin, bin->queue, "sink");
+
+	  ret = TRUE;
+
+	  //ret = start_rtsp_streaming (config->rtsp_port, config->udp_port, config->codec);
+	  if (ret != TRUE) {
+	    g_print ("%s: start_rtmp_streaming function failed\n", __func__);
+	  }
+
+	done:
+	  if (caps) {
+	    gst_caps_unref (caps);
+	  }
+	  if (!ret) {
+	    NVGSTDS_ERR_MSG_V ("%s failed", __func__);
+	  }
+	  return ret;
 }
 
 static gboolean
@@ -628,6 +768,11 @@ create_sink_bin (guint num_sub_bins, NvDsSinkSubBinConfig * config_array,
         break;
       case NV_DS_SINK_MSG_CONV_BROKER:
         if (!create_msg_conv_broker_bin (&config_array[i].msg_conv_broker_config,
+                &bin->sub_bins[i]))
+          goto done;
+        break;
+      case NV_DS_SINK_RTMP:
+        if (!create_rtmpsink_bin (&config_array[i].encoder_config,
                 &bin->sub_bins[i]))
           goto done;
         break;

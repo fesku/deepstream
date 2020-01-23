@@ -146,6 +146,8 @@ parse_config_file (NvDsConfig *config, gchar *cfg_file_path)
     GST_DEBUG_CATEGORY_INIT (APP_CFG_PARSER_CAT, "NVDS_CFG_PARSER", 0, NULL);
   }
 
+  GST_CAT_DEBUG(APP_CFG_PARSER_CAT, "cfg_file_path %s", cfg_file_path);
+
   if (!g_key_file_load_from_file (cfg_file, cfg_file_path, G_KEY_FILE_NONE,
           &error)) {
     GST_CAT_ERROR (APP_CFG_PARSER_CAT, "Failed to load uri file: %s",
@@ -156,6 +158,7 @@ parse_config_file (NvDsConfig *config, gchar *cfg_file_path)
 
   for (group = groups; *group; group++) {
     gboolean parse_err = FALSE;
+    //gst_print("GST_LEVEL_DEBUG %d, GST_LEVEL_COUNT %d, GST_LEVEL_DEBUG %d, _gst_debug_min %d", GST_LEVEL_DEBUG, GST_LEVEL_COUNT, GST_LEVEL_DEBUG, _gst_debug_min);
     GST_CAT_DEBUG (APP_CFG_PARSER_CAT, "Parsing group: %s", *group);
     if (!g_strcmp0 (*group, CONFIG_GROUP_APP)) {
       parse_err = !parse_app (config, cfg_file, cfg_file_path);

@@ -38,6 +38,7 @@ typedef enum
   NV_DS_SINK_UDPSINK,
   NV_DS_SINK_RENDER_OVERLAY,
   NV_DS_SINK_MSG_CONV_BROKER,
+  NV_DS_SINK_RTMP
 } NvDsSinkType;
 
 typedef enum
@@ -64,6 +65,7 @@ typedef struct
   guint rtsp_port;
   guint udp_port;
   guint iframeinterval;
+  gchar *rtmp_location;
 } NvDsSinkEncoderConfig;
 
 typedef struct
@@ -119,6 +121,8 @@ typedef struct
   GstElement *mux;
   GstElement *sink;
   GstElement *rtppay;
+  GstElement *rtpdepay; //Extracts H265 video from RTP packets (RFC 7798) https://gstreamer.freedesktop.org/documentation/rtp/rtph265depay.html?gi-language=c
+  GstElement *flvmux;
   gulong sink_buffer_probe;
 } NvDsSinkBinSubBin;
 

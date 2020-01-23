@@ -122,6 +122,9 @@ GST_DEBUG_CATEGORY (APP_CFG_PARSER_CAT);
 #define CONFIG_GROUP_SINK_MSG_BROKER_CONFIG_FILE "msg-broker-config"
 #define CONFIG_GROUP_SINK_MSG_BROKER_COMP_ID "msg-broker-comp-id"
 
+#define CONFIG_GROUP_SINK_RTMP_LOCATION "rtmp-location"
+
+
 #define CONFIG_GROUP_TILED_DISPLAY_ROWS "rows"
 #define CONFIG_GROUP_TILED_DISPLAY_COLUMNS "columns"
 #define CONFIG_GROUP_TILED_DISPLAY_WIDTH "width"
@@ -1164,6 +1167,11 @@ parse_sink (NvDsSinkSubBinConfig *config, GKeyFile *key_file, gchar *group, gcha
           g_key_file_get_integer (key_file, group,
               CONFIG_GROUP_SINK_UDP_PORT, &error);
       CHECK_ERROR (error);
+    } else if (!g_strcmp0 (*key, CONFIG_GROUP_SINK_RTMP_LOCATION)) {
+        config->encoder_config.rtmp_location =
+            g_key_file_get_string (key_file, group,
+            		CONFIG_GROUP_SINK_RTMP_LOCATION, &error);
+        CHECK_ERROR (error);
     } else if (!g_strcmp0 (*key, CONFIG_GROUP_SINK_OVERLAY_ID)) {
       config->render_config.overlay_id =
           g_key_file_get_integer (key_file, group,
@@ -1234,6 +1242,11 @@ parse_sink (NvDsSinkSubBinConfig *config, GKeyFile *key_file, gchar *group, gcha
           g_key_file_get_integer (key_file, group,
           CONFIG_GROUP_SINK_MSG_BROKER_COMP_ID, &error);
       CHECK_ERROR (error);
+    } else if (!g_strcmp0 (*key, CONFIG_GROUP_SINK_MSG_BROKER_COMP_ID)) {
+        config->msg_conv_broker_config.broker_comp_id =
+            g_key_file_get_integer (key_file, group,
+            CONFIG_GROUP_SINK_MSG_BROKER_COMP_ID, &error);
+        CHECK_ERROR (error);
     } else {
       NVGSTDS_WARN_MSG_V ("Unknown key '%s' for group [%s]", *key, group);
     }
